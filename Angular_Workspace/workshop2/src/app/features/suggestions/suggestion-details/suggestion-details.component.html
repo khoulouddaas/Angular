@@ -1,0 +1,26 @@
+<h2 class="page-title">Détails de la suggestion</h2>
+
+<div *ngIf="suggestion; else notFound" class="card">
+  <h3 class="title">{{ suggestion.title }}</h3>
+
+  <div class="meta">
+    <span class="cat">{{ suggestion.category }}</span>
+    <span class="dot">·</span>
+    <span class="date">{{ suggestion.date | date:'dd MMM yyyy' }}</span>
+  </div>
+
+  <p class="desc">{{ suggestion.description }}</p>
+
+  <span class="badge" [ngClass]="suggestion.status">
+    {{ suggestion.status | uppercase }}
+  </span>
+
+  <div class="actions">
+    <a class="btn" routerLink="/suggestions">Back to list</a>
+  </div>
+</div>
+
+<ng-template #notFound>
+  <p>Suggestion introuvable (id = {{ id }}).</p>
+  <a class="btn" routerLink="/suggestions">Back to list</a>
+</ng-template>
