@@ -50,6 +50,7 @@ export class ListSuggestionComponent {
       nbLikes: 0
     }
   ];
+  static suggestions: any;
 
   likeSuggestion(s: Suggestion) {
     s.nbLikes++;

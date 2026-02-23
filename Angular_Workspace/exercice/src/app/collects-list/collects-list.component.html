@@ -1,0 +1,27 @@
+<h1>Liste des Déchets</h1>
+
+<table border="1" cellpadding="8" cellspacing="0">
+ 
+    <tr>
+      <th>ID</th>
+      <th>Zone</th>
+      <th>Statut</th>
+      <th>Type de Déchet</th>
+      <th>Date</th>
+      <th>Capacité</th>
+      <th>Action</th>
+    </tr>
+ 
+    <tr *ngFor="let d of listeDechets">
+      <td>{{ d.id }}</td>
+      <td>{{ d.zone }}</td>
+      <td>{{ d.statut }}</td>
+      <td>{{ d.typeDechet }}</td>
+      <td>{{ d.date }}</td>
+      <td>{{ d.capacite }}</td>
+      <td>
+        <button [routerLink]="['/details', d.id]">Voir Détails</button>
+      </td>
+    </tr>
+  
+</table>
