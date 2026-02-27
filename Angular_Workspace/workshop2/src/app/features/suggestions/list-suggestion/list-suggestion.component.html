@@ -1,46 +1,50 @@
-
-<h2 class="page-title">Liste des suggestions</h2>
-
-<div class="header-actions">
-  <input class="search" type="text" placeholder="Rechercher une suggestion" [(ngModel)]="searchText"/>
-  <button class="add-btn" [routerLink]="['/suggestions/add']">➕ Ajouter suggestion</button>
-</div>
-<div class="card" *ngFor="let s of filteredSuggestions">
-  <h3 class="title">{{ s.title }}</h3>
-
-  <div class="meta">
-    <span class="cat">{{ s.category }}</span>
-    <span class="dot">·</span>
-    <span class="date">{{ s.date | date:'dd MMM yyyy' }}</span>
+<div class="page-wrapper">
+  <div class="page-header">
+    <h2 class="page-title">💡 Suggestions</h2>
+    <button class="add-btn" [routerLink]="['/suggestions/add']">+ Nouvelle suggestion</button>
   </div>
 
-  <p class="desc">{{ s.description }}</p>
+  <input
+    class="search"
+    type="text"
+    placeholder="🔍 Rechercher par titre ou catégorie..."
+    [(ngModel)]="searchText"
+  />
 
-  <span class="badge" [ngClass]="s.status">
-    {{ s.status | uppercase }}
-  </span>
+  <div class="card" *ngFor="let s of filteredSuggestions">
+    <div class="card-top">
+      <div class="card-meta">
+        <span class="cat-badge">{{ s.category }}</span>
+        <span class="date">{{ s.date | date:'dd MMM yyyy' }}</span>
+      </div>
+      <span class="status-badge" [ngClass]="s.status">{{ s.status | uppercase }}</span>
+    </div>
 
-  <a [routerLink]="['/suggestions', s.id]" [state]="{ suggestion: s }">Voir détails</a>
+    <h3 class="title">{{ s.title }}</h3>
+    <p class="desc">{{ s.description }}</p>
 
+    <div class="card-actions">
+      <a class="btn btn-details" [routerLink]="['/suggestions', s.id]">🔍 Détails</a>
 
-  <div class="actions" *ngIf="s.status !== 'refusee'">
-    <button class="like-btn" (click)="likeSuggestion(s)">
-      👍 Like {{ s.nbLikes }}
-    </button>
-    <button class="fav-btn" (click)="addToFavorites(s)">
-      ♡ Ajouter aux favoris
-    </button>
+      <ng-container *ngIf="s.status !== 'refusee'">
+        <button class="btn btn-like" (click)="likeSuggestion(s)">
+          👍 {{ s.nbLikes }}
+        </button>
+        <button class="btn btn-fav" (click)="addToFavorites(s)">
+          ♡ Favoris
+        </button>
+      </ng-container>
+
+      <button class="btn btn-delete" (click)="deleteSuggestion(s.id)">
+        🗑
+      </button>
+    </div>
   </div>
 
-
-  
-</div>
-
-<div class="fav-box" *ngIf="favorites.length > 0">
-  <h3>Favoris</h3>
-  <ul>
-    <li *ngFor="let f of favorites">
-      {{ f.title }} ({{ f.category }})
-    </li>
-  </ul>
+  <div class="fav-box" *ngIf="favorites.length > 0">
+    <h3>⭐ Favoris</h3>
+    <ul>
+      <li *ngFor="let f of favorites">{{ f.title }} <span>{{ f.category }}</span></li>
+    </ul>
+  </div>
 </div>

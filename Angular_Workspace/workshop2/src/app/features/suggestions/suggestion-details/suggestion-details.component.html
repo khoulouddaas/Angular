@@ -1,25 +1,46 @@
-<h2 class="page-title">Détails de la suggestion</h2>
+<div class="page-wrapper">
 
-<div *ngIf="suggestion; else notFound" class="card">
-  <h3 class="title">{{ suggestion.title }}</h3>
-
-  <div class="meta">
-    <span class="cat">{{ suggestion.category }}</span>
-    <span class="dot">·</span>
-    <span class="date">{{ suggestion.date | date:'dd MMM yyyy' }}</span>
+  <div class="page-header">
+    <h2 class="page-title">💡 Détails de la suggestion</h2>
+    <a class="btn btn-back" routerLink="/suggestions">← Retour</a>
   </div>
 
-  <p class="desc">{{ suggestion.description }}</p>
+  <div *ngIf="suggestion; else notFound" class="card">
 
-  <span class="badge" [ngClass]="suggestion.status">
-    {{ suggestion.status | uppercase }}
-  </span>
+    <div class="card-top">
+      <div class="card-meta">
+        <span class="cat-badge">{{ suggestion.category }}</span>
+        <span class="date">{{ suggestion.date | date:'dd MMM yyyy' }}</span>
+      </div>
+      <span class="status-badge" [ngClass]="suggestion.status">
+        {{ suggestion.status | uppercase }}
+      </span>
+    </div>
 
-  <div class="actions">
-    <a class="btn" routerLink="/suggestions">Back to list</a>
+    <h3 class="title">{{ suggestion.title }}</h3>
+    <p class="desc">{{ suggestion.description }}</p>
+
+    <div class="likes-row">
+      <span class="likes">👍 {{ suggestion.nbLikes }} likes</span>
+    </div>
+
+    <div class="card-actions">
+      <a class="btn btn-details"
+         [routerLink]="['/suggestions/edit', suggestion.id]">
+        ✏️ Modifier
+      </a>
+      <button class="btn btn-delete" (click)="deleteSuggestion()">
+        🗑 Supprimer
+      </button>
+    </div>
+
   </div>
+
+  <ng-template #notFound>
+    <div class="card not-found">
+      <p>Suggestion introuvable.</p>
+      <a class="btn btn-back" routerLink="/suggestions">← Retour à la liste</a>
+    </div>
+  </ng-template>
+
 </div>
-
-<ng-template #notFound>
-  <a class="btn" routerLink="/suggestions">Back to list</a>
-</ng-template>

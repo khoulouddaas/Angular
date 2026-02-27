@@ -6,14 +6,14 @@ import { SuggestionsRoutingModule } from './suggestions-routing.module';
 import { SuggestionsComponent } from './suggestions.component';
 import { SuggestionDetailsComponent } from './suggestion-details/suggestion-details.component';
 import { SuggestionFormComponent } from './suggestion-form/suggestion-form.component';
-import { ListSuggestionComponent } from './list-suggestion/list-suggestion.component'; // ← Add
+import { ListSuggestionComponent } from './list-suggestion/list-suggestion.component'; 
 
 @NgModule({
   declarations: [
     SuggestionsComponent,
     SuggestionDetailsComponent,
     SuggestionFormComponent,
-    ListSuggestionComponent // ← Add
+    ListSuggestionComponent 
   ],
   imports: [
     CommonModule,

@@ -6,4 +6,5 @@ export class Suggestion {
   date!: Date;
   status!: string;
   nbLikes!: number;
+  suggestion: Suggestion | undefined;
 }

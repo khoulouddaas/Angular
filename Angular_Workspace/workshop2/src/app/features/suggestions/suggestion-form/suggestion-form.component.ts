@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Suggestion } from '../../../models/suggestion';
+import { SuggestionService } from '../../../core/services/suggestion.service';
 
 @Component({
   selector: 'app-suggestion-form',
@@ -9,8 +10,11 @@ import { Suggestion } from '../../../models/suggestion';
   styleUrl: './suggestion-form.component.css'
 })
 export class SuggestionFormComponent implements OnInit {
+
   suggestionForm!: FormGroup;
-  
+  suggestionId!: number;
+  isEditMode = false;
+
   categories: string[] = [
     'Infrastructure et bâtiments',
     'Technologie et services numériques',
@@ -24,53 +28,33 @@ export class SuggestionFormComponent implements OnInit {
     'Autre'
   ];
 
-  // Temporary storage (in real app, use a service)
-  suggestions: Suggestion[] = [
-    {
-      id: 1,
-      title: 'Organiser une journée team building',
-      description: 'Suggestion pour organiser une journée de team building pour renforcer les liens entre les membres de l\'équipe.',
-      category: 'Événements',
-      date: new Date('2025-01-20'), 
-      status: 'acceptee',
-      nbLikes: 10
-    },
-    {
-      id: 2,
-      title: 'Améliorer le système de réservation',
-      description: 'Proposition pour améliorer la gestion des réservations en ligne avec un système de confirmation automatique.',
-      category: 'Technologie',
-      date: new Date('2025-01-15'), 
-      status: 'refusee',
-      nbLikes: 0
-    },
-    {
-      id: 3,
-      title: 'Créer un système de récompenses',
-      description: 'Mise en place d\'un programme de récompenses pour motiver les employés et reconnaître leurs efforts.',
-      category: 'Ressources Humaines', 
-      date: new Date('2025-01-25'), 
-      status: 'refusee',
-      nbLikes: 0
-    },
-    {
-      id: 4,
-      title: 'Moderniser l\'interface utilisateur',
-      description: 'Refonte complète de l\'interface utilisateur pour une meilleure expérience utilisateur.',
-      category: 'Technologie',
-      date: new Date('2025-01-30'), 
-      status: 'en_attente',
-      nbLikes: 0
-    }
-  ];
-
   constructor(
     private fb: FormBuilder,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute,
+    private suggestionService: SuggestionService
   ) {}
 
   ngOnInit(): void {
     this.initForm();
+
+    this.suggestionId = Number(this.route.snapshot.paramMap.get('id'));
+    if (this.suggestionId) {
+      this.isEditMode = true;
+      this.suggestionService.getSuggestionById(this.suggestionId).subscribe({
+        next: (response: any) => {
+          const data: Suggestion = response.suggestion;
+          if (data) {
+            this.suggestionForm.patchValue({
+              title:       data.title,
+              description: data.description,
+              category:    data.category
+            });
+          }
+        },
+        error: (err: any) => console.error('Error loading suggestion:', err)
+      });
+    }
   }
 
   initForm(): void {
@@ -85,42 +69,39 @@ export class SuggestionFormComponent implements OnInit {
         Validators.minLength(30)
       ]],
       category: ['', Validators.required],
-      date: [{ value: new Date().toISOString().split('T')[0], disabled: true }],
+      date:   [{ value: new Date().toISOString().split('T')[0], disabled: true }],
       status: [{ value: 'en attente', disabled: true }]
     });
   }
 
-  // Getters for easy access in template
-  get title() { return this.suggestionForm.get('title'); }
+  get title()       { return this.suggestionForm.get('title'); }
   get description() { return this.suggestionForm.get('description'); }
-  get category() { return this.suggestionForm.get('category'); }
+  get category()    { return this.suggestionForm.get('category'); }
 
   onSubmit(): void {
     if (this.suggestionForm.valid) {
-      // Generate new ID
-      const newId = this.suggestions.length > 0 
-        ? Math.max(...this.suggestions.map(s => s.id)) + 1 
-        : 1;
-
-      // Create new suggestion
-      const newSuggestion: Suggestion = {
-        id: newId,
+      const suggestion: Suggestion = {
+        id: this.suggestionId,
         title: this.suggestionForm.get('title')?.value,
         description: this.suggestionForm.get('description')?.value,
         category: this.suggestionForm.get('category')?.value,
         date: new Date(),
         status: 'en attente',
-        nbLikes: 0
+        nbLikes: 0,
+        suggestion: undefined
       };
 
-      // Add to array (in real app, use a service)
-      this.suggestions.push(newSuggestion);
-
-      console.log('New suggestion added:', newSuggestion);
-      console.log('All suggestions:', this.suggestions);
-
-      // Navigate back to list
-      this.router.navigate(['/suggestions']);
+      if (this.isEditMode) {
+        this.suggestionService.updateSuggestion(this.suggestionId, suggestion).subscribe({
+          next: () => this.router.navigate(['/suggestions']),
+          error: (err: any) => console.error('Error updating:', err)
+        });
+      } else {
+        this.suggestionService.addSuggestion(suggestion).subscribe({
+          next: () => this.router.navigate(['/suggestions']),
+          error: (err: any) => console.error('Error adding:', err)
+        });
+      }
     }
   }
 }
